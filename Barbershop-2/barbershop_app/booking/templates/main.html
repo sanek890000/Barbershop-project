@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+   <html lang="ru">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1">
+       <title>Барбершоп Запись</title>
+       <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+       <style>
+           html { scroll-behavior: smooth; }
+       </style>
+   </head>
+   <body>
+       <header class="p-3 bg-dark text-white">
+           <div class="container">
+               <h1>Барбершоп</h1>
+           </div>
+       </header>
+       <main class="my-5">
+           <div class="container">
+               <section id="about">
+                   <h2>О нас</h2>
+                   <p>Информация о барбершопе.</p>
+               </section>
+               <section id="masters" class="mt-5">
+                   <h2>Наши мастера</h2>
+                   <div class="row">
+                       {% for master in masters %}
+                       <div class="col-md-4">
+                           <div class="card mb-4">
+                               <img src="{{ master.photo.url }}" class="card-img-top" alt="{{ master.first_name }}">
+                               <div class="card-body">
+                                   <h5 class="card-title">{{ master.first_name }} {{ master.last_name }}</h5>
+                                   <p class="card-text">{{ master.contact_info }}</p>
+                               </div>
+                           </div>
+                       </div>
+                       {% endfor %}
+                   </div>
+               </section>
+               <section id="booking_form" class="mt-5">
+                   <h2>Запись на услуги</h2>
+                   <form method="post" action="{% url 'create_booking' %}" id="booking-form">
+                       {% csrf_token %}
+                       {{ visit_form.as_p }}
+                       <button type="submit" class="btn btn-primary">Записаться</button>
+                   </form>
+               </section>
+           </div>
+       </main>
+       <footer class="text-center py-4 bg-dark text-white">
+           <div class="container">
+               <p>Контакты и информация.</p>
+           </div>
+       </footer>
+       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+       <script>
+           $(document).ready(function(){
+               $("#id_master").change(function(){
+                   var masterId = $(this).val();
+                   $.ajax({
+                       url: "{% url 'service_fetch' %}",
+                       data: { "master_id": masterId },
+                       success: function(data){
+                           $("#id_service").empty();
+                           $.each(data, function(index, service) {
+                               $("#id_service").append('<option value="' + service.id + '">' + service.name + '</option>');
+                           });
+                       }
+                   });
+               });
+           });
+       </script>
+   </body>
+   </html>
